@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Sando - Sistema de Gestión Inteligente</title>
+    <link rel="icon" type="image/png" href="assets/logo_sando.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/config/tailwind.config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body class="font-sans min-h-screen">
+
+    <header class="banner sticky top-0 z-30 shadow-[0_8px_24px_-10px_rgba(59,36,20,.55)]">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap gap-3 justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="assets/logo_sando.png" alt="Logo Sando" class="logo-bob h-16 w-16 object-contain">
+                <div>
+                    <h1 class="font-display text-2xl md:text-3xl font-bold tracking-wide text-cocoa leading-none">PANEL DE SANDO</h1>
+                    <p class="text-xs md:text-sm font-bold text-cocoa/70 mt-1">Sistema de Gestión Inteligente</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="sync-status" class="status-pill status-wait"><span class="dot"></span>Conectando...</span>
+                <button data-action="borrar-todo" class="inline-flex items-center gap-2 bg-cocoa/10 hover:bg-red-600 hover:text-white text-cocoa text-sm py-2 px-4 rounded-full font-extrabold transition border-2 border-cocoa/20 hover:border-red-600">
+                    <svg class="ico !w-4 !h-4" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                    Resetear Datos
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="container mx-auto px-4 mt-6">
+        <div class="card !rounded-2xl p-1.5 flex gap-1 overflow-x-auto">
+            <button data-action="cambiar-tab" data-tab="teoria" id="btn-teoria" class="tab-btn active">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></svg>
+                Guía V3
+            </button>
+            <button data-action="cambiar-tab" data-tab="ingreso" id="btn-ingreso" class="tab-btn">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                Ingreso Diario
+            </button>
+            <button data-action="cambiar-tab" data-tab="dashboard" id="btn-dashboard" class="tab-btn">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M8 17v-6"/><path d="M13 17V7"/><path d="M18 17v-4"/></svg>
+                Dashboard
+            </button>
+            <button data-action="cambiar-tab" data-tab="historial" id="btn-historial" class="tab-btn">
+                <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                Historial y Excel
+            </button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- PESTAÑA 1: TEORÍA -->
+        <section id="teoria" class="tab-content active">
+            <div class="hero rounded-3xl p-8 md:p-10 mb-8 text-white relative overflow-hidden shadow-xl">
+                <img src="assets/logo_sando.png" alt="" class="absolute -right-10 -bottom-12 w-56 opacity-15 rotate-12 pointer-events-none select-none">
+                <span class="chip" style="--c:#FFC72C">Arquitectura V3 (Prescriptiva)</span>
+                <h2 class="font-display text-3xl md:text-4xl font-bold mt-3 text-gold">El Sistema que Piensa</h2>
+                <p class="mt-2 text-white/80 max-w-xl font-semibold">Sando ya no solo muestra gráficos. Ahora cruza tu operación diaria con el historial, detecta problemas antes de que sean graves y te sugiere planes de acción específicos.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger">
+                <article class="card lift accent p-6" style="--c:#2563EB">
+                    <h3 class="font-display font-bold text-xl mt-2">1. Captura Rápida</h3>
+                    <p class="text-sm mt-1 text-cocoa-soft font-semibold">El administrador solo tarda 1 minuto llenando números y evaluando cualitativamente el día con las nuevas casillas.</p>
+                </article>
+                <article class="card lift accent p-6" style="--c:#DC2626">
+                    <h3 class="font-display font-bold text-xl mt-2">2. Comparación Automática</h3>
+                    <p class="text-sm mt-1 text-cocoa-soft font-semibold">El sistema compara el turno de "Hoy" contra el comportamiento histórico promedio de Sando para hallar desviaciones críticas.</p>
+                </article>
+                <article class="card lift accent p-6" style="--c:#9333EA">
+                    <h3 class="font-display font-bold text-xl mt-2">3. Oportunidad de Mejora</h3>
+                    <p class="text-sm mt-1 text-cocoa-soft font-semibold">Si hay fallas, el motor cruza los problemas (ej. demora) con la causa (ej. alta demanda) para sugerirte la acción ideal.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- PESTAÑA 2: INGRESO -->
+        <section id="ingreso" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <form id="form-datos" class="card p-6 md:p-8 lg:col-span-2">
+                    <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+                        <div>
+                            <h2 class="font-display text-3xl font-bold">Cierre de Turno</h2>
+                            <p class="text-cocoa-soft font-semibold">Registra los datos cuantitativos y cualitativos del día.</p>
+                        </div>
+                        <label class="w-full sm:w-56"><span class="field-label">Fecha</span>
+                            <div class="input-wrap"><span class="affix"><svg class="ico !w-4 !h-4" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><input type="date" id="fecha" required></div>
+                        </label>
+                    </div>
+
+                    <h3 class="flex items-center gap-2 font-display font-bold text-lg mb-4"><span class="bubble !w-9 !h-9 !rounded-xl" style="--c:#D97706"><svg class="ico !w-4 !h-4" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>Dinero del turno</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+                        <label><span class="field-label">Ventas Totales</span><div class="input-wrap"><span class="affix">$</span><input type="number" step="0.01" id="ventas" placeholder="0.00" required></div></label>
+                        <label><span class="field-label">Compras de Alimentos del Día</span><div class="input-wrap"><span class="affix">$</span><input type="number" step="0.01" id="insumos" placeholder="0.00" required></div></label>
+                        <label><span class="field-label">Costo Total de Nómina / Sueldos</span><div class="input-wrap"><span class="affix">$</span><input type="number" step="0.01" id="nomina" placeholder="0.00" required></div></label>
+                        <label><span class="field-label">Gastos Operativos Adicionales</span><div class="input-wrap"><span class="affix">$</span><input type="number" step="0.01" id="operativos" placeholder="0.00" required></div></label>
+                    </div>
+
+                    <h3 class="flex items-center gap-2 font-display font-bold text-lg mb-4"><span class="bubble !w-9 !h-9 !rounded-xl" style="--c:#2563EB"><svg class="ico !w-4 !h-4" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14a6.5 6.5 0 0 1 3.5 6"/></svg></span>Métricas Operativas</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+                        <label><span class="field-label">Pedidos Totales</span><div class="input-wrap"><input type="number" id="pedidos" placeholder="0" required></div></label>
+                        <label><span class="field-label">Clientes Atendidos</span><div class="input-wrap"><input type="number" id="clientes" placeholder="0" required></div></label>
+                        <label><span class="field-label">Mesas Ocupadas</span><div class="input-wrap"><input type="number" id="mesas" placeholder="0" required></div></label>
+                        <label><span class="field-label">Horas Trabajadas</span><div class="input-wrap"><input type="number" step="0.5" id="horas" placeholder="0" required></div></label>
+                        <label><span class="field-label">Tiempo Ciclo Promedio</span><div class="input-wrap"><input type="number" id="ciclo" placeholder="0" required><span class="affix">min</span></div></label>
+                        <label><span class="field-label">Reclamos del cliente</span><div class="input-wrap"><input type="number" id="reclamos" placeholder="0" required></div></label>
+                    </div>
+
+                    <h3 class="flex items-center gap-2 font-display font-bold text-lg mb-4"><span class="bubble !w-9 !h-9 !rounded-xl" style="--c:#9333EA"><svg class="ico !w-4 !h-4" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></span>Evaluación Cualitativa (Opcional)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 bg-white/40 rounded-2xl border border-cocoa/10">
+                        <div>
+                            <span class="field-label mb-2">¿Hubo algún problema hoy?</span>
+                            <div class="space-y-2">
+                                <label class="check-wrap"><input type="checkbox" name="problemas" value="Demoras"> Demoras en cocina</label>
+                                <label class="check-wrap"><input type="checkbox" name="problemas" value="Falta Personal"> Falta de personal</label>
+                                <label class="check-wrap"><input type="checkbox" name="problemas" value="Falta Materia Prima"> Falta de materia prima</label>
+                                <label class="check-wrap"><input type="checkbox" name="problemas" value="Equipo"> Fallas en equipo</label>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="field-label mb-2">¿Causa probable?</span>
+                            <div class="space-y-2">
+                                <label class="check-wrap"><input type="checkbox" name="causas" value="Alta Demanda"> Alta demanda (Pico)</label>
+                                <label class="check-wrap"><input type="checkbox" name="causas" value="Cocina Saturada"> Cocina saturada/desorden</label>
+                                <label class="check-wrap"><input type="checkbox" name="causas" value="Inexperiencia"> Inexperiencia / Lentitud</label>
+                                <label class="check-wrap"><input type="checkbox" name="causas" value="Otro"> Otro factor</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="flex items-center gap-2 font-display font-bold text-lg mb-4 mt-8"><span class="bubble !w-9 !h-9 !rounded-xl" style="--c:#BE123C"><svg class="ico !w-4 !h-4" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h2"/></svg></span>Deudas (Opcional)</h3>
+                    <div class="p-5 bg-white/40 rounded-2xl border border-cocoa/10">
+                        <p class="text-cocoa-soft text-sm font-semibold mb-4">Registra una deuda nueva con la fecha de este cierre. La verás, con sus abonos, en el Dashboard.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <label><span class="field-label">Concepto / Acreedor</span><div class="input-wrap"><input type="text" id="deuda-concepto" placeholder="Ej. Proveedor de carnes" maxlength="80"></div></label>
+                            <label><span class="field-label">Monto de la deuda</span><div class="input-wrap"><span class="affix">$</span><input type="number" step="0.01" min="0.01" id="deuda-monto" placeholder="0.00"></div></label>
+                        </div>
+                        <button type="button" data-action="agregar-deuda" class="mt-4 inline-flex items-center gap-2 bg-cocoa/10 hover:bg-cocoa hover:text-white text-cocoa text-sm py-2 px-4 rounded-full font-extrabold transition border-2 border-cocoa/20">+ Agregar deuda ahora</button>
+                        <p class="text-xs font-semibold text-cocoa-soft mt-2">Si dejas estos campos llenos, la deuda también se guarda con el botón "Guardar y Sincronizar Cierre".</p>
+
+                        <div class="mt-6 pt-5 border-t border-cocoa/10">
+                            <label class="block max-w-sm"><span class="field-label">Pago de deudas hoy</span><div class="input-wrap"><span class="affix">$</span><input type="number" step="0.01" min="0" id="pago-deudas" placeholder="0.00"></div></label>
+                            <p class="text-xs font-semibold text-cocoa-soft mt-2">Lo que pagas hoy de deudas se descuenta del resultado operativo estimado de este cierre (puede quedar negativo) y se abona a las deudas pendientes, de la más antigua a la más nueva. <span id="ayuda-pago-deudas" class="font-extrabold"></span></p>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-gold w-full mt-8 py-4 rounded-2xl text-lg flex items-center justify-center gap-2">
+                        <svg class="ico" viewBox="0 0 24 24"><path d="M20 16.6A4.5 4.5 0 0 0 17.5 8h-1.3A7 7 0 1 0 4 14.9"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+                        Guardar y Sincronizar Cierre V3
+                    </button>
+                </form>
+
+                <aside class="hero rounded-3xl p-6 md:p-8 text-white shadow-xl lg:sticky lg:top-28 self-start relative overflow-hidden">
+                    <img src="assets/logo_sando.png" alt="" class="absolute -right-8 -top-8 w-32 opacity-20 pointer-events-none select-none">
+                    <p class="text-gold font-extrabold uppercase text-xs tracking-widest">Vista previa del turno</p>
+                    <p class="text-white/70 text-sm font-semibold mt-1">Se calcula mientras escribes</p>
+                    <div class="mt-6">
+                        <p class="text-white/70 text-sm font-bold">Resultado operativo estimado (ROE)</p>
+                        <p id="prev-utilidad" class="font-display text-4xl font-bold text-gold">$0.00</p>
+                        <div class="flex justify-between text-sm font-bold mt-3"><span class="text-white/70">Pago de deudas</span><span id="prev-pago" style="color:#FDA4AF">− $0.00</span></div>
+                        <div class="border-t border-white/20 mt-3 pt-3">
+                            <p class="text-white/70 text-sm font-bold">Resultado después de deudas</p>
+                            <p id="prev-real" class="font-display text-3xl font-bold" style="color:#4ADE80">$0.00</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 space-y-5">
+                        <div style="--c:#FFC72C">
+                            <div class="flex justify-between text-sm font-bold"><span>Índice de Compras <span class="text-white/50">(monitoreo)</span></span><span id="prev-compras">0%</span></div>
+                            <div class="bar mt-2 !bg-white/15"><span id="prev-compras-bar"></span></div>
+                        </div>
+                        <div style="--c:#C084FC">
+                            <div class="flex justify-between text-sm font-bold"><span>Labor Cost <span class="text-white/50">(meta 30%)</span></span><span id="prev-labor">0%</span></div>
+                            <div class="bar mt-2 !bg-white/15"><span id="prev-labor-bar"></span></div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+            <div id="mensaje-exito" class="hidden toast bg-green-600 text-white px-5 py-4 rounded-2xl shadow-2xl font-extrabold flex items-center gap-3">
+                <svg class="ico" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                <span id="mensaje-exito-texto">¡Cierre guardado y sincronizado!</span>
+            </div>
+        </section>
+
+        <!-- PESTAÑA 3: DASHBOARD INTELIGENTE -->
+        <section id="dashboard" class="tab-content">
+            <div class="flex flex-wrap items-end justify-between gap-2 mb-5">
+                <div>
+                    <h2 class="font-display text-3xl font-bold">Resumen Global Histórico</h2>
+                    <p class="text-cocoa-soft font-semibold">Indicadores acumulados de la base de datos</p>
+                </div>
+                <span id="dash-registros" class="chip" style="--c:#3B2414">0 registros</span>
+            </div>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-10 stagger">
+                <div class="card lift accent p-5" style="--c:#D97706">
+                    <div class="bubble !w-10 !h-10"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12A9 9 0 1 1 12 3v9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg></div>
+                    <h3 class="text-cocoa-soft text-xs font-extrabold uppercase mt-3">Índice de Compras Global</h3>
+                    <p class="font-display text-2xl font-bold mt-1" id="res-compras">0%</p>
+                    <div class="bar mt-3"><span id="bar-compras"></span></div>
+                </div>
+                <div class="card lift accent p-5" style="--c:#DC2626">
+                    <div class="bubble !w-10 !h-10"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+                    <h3 class="text-cocoa-soft text-xs font-extrabold uppercase mt-3">Tiempo Ciclo</h3>
+                    <p class="font-display text-2xl font-bold mt-1" id="res-ciclo">0 Min</p>
+                    <div class="bar mt-3"><span id="bar-ciclo"></span></div>
+                </div>
+                <div class="card lift accent p-5" style="--c:#9333EA">
+                    <div class="bubble !w-10 !h-10"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14a6.5 6.5 0 0 1 3.5 6"/></svg></div>
+                    <h3 class="text-cocoa-soft text-xs font-extrabold uppercase mt-3">Labor Cost</h3>
+                    <p class="font-display text-2xl font-bold mt-1" id="res-labor">0%</p>
+                    <div class="bar mt-3"><span id="bar-labor"></span></div>
+                </div>
+                <div class="card lift accent p-5" style="--c:#BE123C">
+                    <div class="bubble !w-10 !h-10"><svg class="ico" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h2"/></svg></div>
+                    <h3 class="text-cocoa-soft text-xs font-extrabold uppercase mt-3">Deuda Pendiente</h3>
+                    <p class="font-display text-2xl font-bold mt-1" id="res-deuda">$0.00</p>
+                    <div class="bar mt-3"><span id="bar-deuda"></span></div>
+                    <p id="sub-deuda" class="text-xs font-bold text-cocoa-soft mt-2">Sin deudas registradas</p>
+                </div>
+            </div>
+
+            <div class="mb-10">
+                <h2 class="font-display text-2xl font-bold">¿Cuánto gana realmente?</h2>
+                <p class="text-cocoa-soft text-sm font-semibold mb-4">Resultado operativo estimado − lo que se pagó de deudas = lo que de verdad le queda.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 stagger">
+                    <div class="hero rounded-[1.25rem] lift p-5 text-white shadow-xl" style="--c:#FFC72C">
+                        <div class="bubble !w-10 !h-10"><svg class="ico" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+                        <h3 class="text-white/70 text-xs font-extrabold uppercase mt-3">Resultado Operativo Estimado</h3>
+                        <p class="font-display text-2xl font-bold mt-1 text-gold" id="res-utilidad">$0.00</p>
+                        <p class="text-xs font-bold text-white/60 mt-2">Ventas netas − compras de insumos − nómina − otros gastos operativos</p>
+                    </div>
+                    <div class="card lift accent p-5" style="--c:#BE123C">
+                        <div class="bubble !w-10 !h-10"><svg class="ico" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h2"/></svg></div>
+                        <h3 class="text-cocoa-soft text-xs font-extrabold uppercase mt-3">− Pagado en Deudas</h3>
+                        <p class="font-display text-2xl font-bold mt-1" style="color:#BE123C" id="res-pagado">$0.00</p>
+                        <p id="sub-pagado" class="text-xs font-bold text-cocoa-soft mt-2">Aún no se ha pagado ninguna deuda</p>
+                    </div>
+                    <div class="hero rounded-[1.25rem] lift p-5 text-white shadow-xl" style="--c:#4ADE80">
+                        <div class="bubble !w-10 !h-10"><svg class="ico" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="m9 12 2 2 4-4"/></svg></div>
+                        <h3 class="text-white/70 text-xs font-extrabold uppercase mt-3">= Resultado tras Deudas</h3>
+                        <p class="font-display text-2xl font-bold mt-1" id="res-utilidad-real">$0.00</p>
+                        <p id="sub-utilidad-real" class="text-xs font-bold text-white/60 mt-2">Lo que realmente le queda después de pagar deudas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-10">
+                <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+                    <div>
+                        <h2 class="font-display text-2xl font-bold flex items-center gap-2">
+                            <span class="bubble !w-9 !h-9 !rounded-xl" style="--c:#BE123C"><svg class="ico !w-4 !h-4" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h2"/></svg></span>
+                            Deudas
+                        </h2>
+                        <p class="text-cocoa-soft text-sm font-semibold mt-1">Lo que pagas de deudas en cada cierre (o con un abono aquí) se descuenta del resultado operativo estimado. Al pagar una deuda completa queda en $0 pendiente.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="deudas-count" class="chip" style="--c:#3B2414">0 pendiente(s) · 0 saldada(s)</span>
+                        <button data-action="cambiar-tab" data-tab="ingreso" class="inline-flex items-center gap-1 bg-cocoa/10 hover:bg-cocoa hover:text-white text-cocoa text-xs py-1.5 px-3 rounded-full font-extrabold transition border-2 border-cocoa/20">+ Agregar deuda</button>
+                    </div>
+                </div>
+
+                <div id="deudas-error" class="hidden card p-4 mb-4 font-bold text-red-700 border-red-300">
+                    No se pudieron leer o guardar las deudas. Revisa que las reglas de Firebase Realtime Database permitan la ruta "deudas".
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5 stagger">
+                    <div class="card lift accent p-5" style="--c:#3B2414">
+                        <h3 class="text-cocoa-soft text-xs font-extrabold uppercase">Total adeudado</h3>
+                        <p class="font-display text-2xl font-bold mt-1" id="deu-total">$0.00</p>
+                    </div>
+                    <div class="card lift accent p-5" style="--c:#16A34A">
+                        <h3 class="text-cocoa-soft text-xs font-extrabold uppercase">Pagado</h3>
+                        <p class="font-display text-2xl font-bold mt-1" id="deu-pagado">$0.00</p>
+                    </div>
+                    <div class="card lift accent p-5" style="--c:#BE123C">
+                        <h3 class="text-cocoa-soft text-xs font-extrabold uppercase">Pendiente</h3>
+                        <p class="font-display text-2xl font-bold mt-1" id="deu-pendiente">$0.00</p>
+                        <p class="text-xs font-bold text-cocoa-soft mt-1" id="deu-avance">Sin deudas registradas</p>
+                    </div>
+                </div>
+
+                <div id="lista-deudas" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="font-display text-2xl font-bold mb-4 flex items-center gap-2">
+                    <span class="bubble !w-9 !h-9 !rounded-xl bg-cocoa text-gold" style="--c:#3B2414"><svg class="ico !w-4 !h-4" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4"/><circle cx="12" cy="3" r="1"/><path d="M9 14h.01M15 14h.01"/></svg></span>
+                    Mejora Continua: Alertas Comparativas y Planes de Acción
+                </h2>
+                <div id="alertas-sistema" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 stagger"></div>
+            </div>
+
+            <h2 class="font-display text-2xl font-bold mb-4">Gráficos de Tendencia</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="card p-6">
+                    <div class="mb-4">
+                        <h3 class="font-display font-bold text-xl">Velocidad de Cocina</h3>
+                        <p class="text-cocoa-soft text-sm font-semibold">Monitorea si los tiempos superan la meta de 20 minutos.</p>
+                    </div>
+                    <canvas id="graficoCiclo"></canvas>
+                </div>
+                <div class="card p-6">
+                    <div class="mb-4">
+                        <h3 class="font-display font-bold text-xl">Rentabilidad y Resultado Operativo</h3>
+                        <p class="text-cocoa-soft text-sm font-semibold">Compara Ventas, Compras de insumos, Nómina, Gastos y Resultado Operativo Estimado.</p>
+                    </div>
+                    <canvas id="graficoVentas"></canvas>
+                </div>
+                <div class="card p-6 lg:col-span-2">
+                    <div class="mb-4">
+                        <h3 class="font-display font-bold text-xl">Resultado Operativo vs Pago de Deudas</h3>
+                        <p class="text-cocoa-soft text-sm font-semibold">Cuánto se gana cada día, cuánto se va en deudas y cuánto queda realmente.</p>
+                    </div>
+                    <canvas id="graficoDeudas"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- PESTAÑA 4: HISTORIAL Y EXCEL -->
+        <section id="historial" class="tab-content">
+            <div class="card p-6 md:p-8">
+                <div class="flex flex-wrap gap-4 justify-between items-center mb-6">
+                    <div>
+                        <h2 class="font-display text-3xl font-bold">Historial de Registros</h2>
+                        <p id="hist-count" class="text-cocoa-soft font-semibold">0 turnos registrados</p>
+                    </div>
+                    <button data-action="descargar-excel" class="bg-green-600 hover:bg-green-700 text-white font-extrabold py-3 px-5 rounded-2xl shadow-lg hover:-translate-y-0.5 transition flex items-center gap-2">
+                        <svg class="ico" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+                        Descargar en Excel
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-2xl border border-cocoa/10">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-cocoa text-gold uppercase text-xs tracking-wider">
+                            <tr>
+                                <th class="py-4 px-3 text-left">Fecha</th>
+                                <th class="py-4 px-3 text-right">Ventas</th>
+                                <th class="py-4 px-3 text-right">Resultado Operativo Est.</th>
+                                <th class="py-4 px-3 text-right">Pago Deudas</th>
+                                <th class="py-4 px-3 text-right">Resultado tras Deudas</th>
+                                <th class="py-4 px-3">Pedidos</th>
+                                <th class="py-4 px-3">Reclamos</th>
+                                <th class="py-4 px-3">Ciclo</th>
+                                <th class="py-4 px-3 text-left">Problemas Base</th>
+                                <th class="py-4 px-3">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-historial" class="text-center font-semibold"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-cocoa-soft text-sm font-bold pb-8">
+        Sando Sandwich · DSS Analytics V3
+    </footer>
+
+    <!-- Lógica de la app: ver js/main.js y README.md -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

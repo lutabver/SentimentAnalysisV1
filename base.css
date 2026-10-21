@@ -1,0 +1,14 @@
+/* ==========================================================
+   base.css — variables, fondo del body y utilidades globales
+   ========================================================== */
+:root { --cocoa: #3B2414; --cocoa-soft: #6B4A33; --gold: #FFC72C; --crema: #F7ECDF; }
+body {
+    background-color: #E9D6C0;
+    background-image:
+        radial-gradient(circle at 10% 0%, rgba(255, 199, 44, .22), transparent 40%),
+        radial-gradient(circle at 95% 30%, rgba(156, 122, 96, .25), transparent 45%),
+        radial-gradient(circle at 50% 100%, rgba(255, 255, 255, .35), transparent 50%);
+    background-attachment: fixed;
+    color: var(--cocoa);
+}
+.ico { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
